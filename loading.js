@@ -1,8 +1,6 @@
-import { loadingService } from "./loading.service";
+import loadingService from "./loading.service";
 
 const loadingOverlay = document.getElementById('loading-overlay');
-
-const loading$ = new Subject();
 
 loadingService.loadingStatus$.subscribe(isLoading => {
     if(isLoading) {
@@ -12,6 +10,4 @@ loadingService.loadingStatus$.subscribe(isLoading => {
     }
 })
 
-loadingService.showLoading();
-
-setTimeout(() => loadingService.hideLoading(), 300);
+setTimeout(() => loadingService.hideLoading(), 3000);
