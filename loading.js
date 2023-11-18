@@ -1,4 +1,4 @@
-import { asyncScheduler, asapScheduler, animationFrameScheduler, interval } from "rxjs";
+import { asyncScheduler, asapScheduler, animationFrameScheduler, interval, queueScheduler } from "rxjs";
 import { takeWhile } from 'rxjs/operators';
 
 import loadingService from "./loading.service";
@@ -14,15 +14,20 @@ loadingService.loadingStatus$.subscribe(isLoading => {
         loadingOverlay.classList.remove('open');
     }
 })
-asapScheduler.schedule(() => loadingService.hideLoading(), 2000);
 
-queueMicrotask(() => infoText.innerHTML = 'Overlay loaded', 2000);
-
-asyncScheduler.schedule(() => infoText.innerHTML = 'Overlay hidden', 2000);
-
-setTimeout(() => infoText.innerHTML = 'Loading overlay', 4000);
-
-interval(10, animationFrameScheduler).pipe(
-    takeWhile(val => val <= 500)).subscribe(val => {
-        ball.style.transform = `translate3d(0, ${val}px, 0)`;
-    });
+queueScheduler.schedule(() => {
+    queueScheduler.schedule(() => {
+        queueScheduler.schedule(() => {
+            queueScheduler.schedule(() => {
+                interval(10, animationFrameScheduler).pipe(
+                    takeWhile(val => val <= 500)).subscribe(val => {
+                        ball.style.transform = `translate3d(0, ${val}px, 0)`;
+                    }, 1000);
+            }, 1000);
+            infoText.innerHTML = 'Overlay hidden'
+        }, 1000);
+        infoText.innerHTML = 'Overlay loaded';
+    }, 1000);
+    asapScheduler.schedule(() => loadingService.hideLoading());
+    infoText.innerHTML = 'Loading overlay';
+}, 1000);
