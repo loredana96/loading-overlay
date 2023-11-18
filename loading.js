@@ -1,4 +1,6 @@
-import { asyncScheduler, asapScheduler, animationFrameScheduler } from "rxjs";
+import { asyncScheduler, asapScheduler, animationFrameScheduler, interval } from "rxjs";
+import { takeWhile } from 'rxjs/operators';
+
 import loadingService from "./loading.service";
 
 const loadingOverlay = document.getElementById('loading-overlay');
@@ -20,9 +22,7 @@ asyncScheduler.schedule(() => infoText.innerHTML = 'Overlay hidden', 2000);
 
 setTimeout(() => infoText.innerHTML = 'Loading overlay', 4000);
 
-animationFrameScheduler.schedule(function(position) {
-    ball.style.transform = `translate3d(0, ${position}px, 0)`;
-    if (position <= 500) {
-        this.schedule(position +1);
-    }
-}, 3000, 0)
+interval(10, animationFrameScheduler).pipe(
+    takeWhile(val => val <= 500)).subscribe(val => {
+        ball.style.transform = `translate3d(0, ${val}px, 0)`;
+    });
