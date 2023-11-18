@@ -1,3 +1,4 @@
+import { asyncScheduler } from "rxjs";
 import loadingService from "./loading.service";
 
 const loadingOverlay = document.getElementById('loading-overlay');
@@ -10,4 +11,4 @@ loadingService.loadingStatus$.subscribe(isLoading => {
     }
 })
 
-setTimeout(() => loadingService.hideLoading(), 3000);
+asyncScheduler.schedule(() => loadingService.hideLoading(), 7000);
